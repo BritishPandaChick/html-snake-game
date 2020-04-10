@@ -7,12 +7,25 @@ $(document).ready(function(){
 
     //Lets save the cell width in a variable for easy control 
     var cw = 10;
-    var d = "right" //default direction 
+    var d;
+    var food;
 
     //Lets create the snake now 
     var snake_array; //an array of cells to make up the snake 
 
-    create_snake();
+    function init(){
+        d = "right"; //default direction
+        create_snake();
+        create_food(); //Now we can see the food particle
+
+        //Lets move the snake now using a timer which will trigger the paint function every 60ms
+        if(typeof game_loop != "undefined") {
+            clearInterval(game_loop);
+        }
+        game_loop = setInterval(paint, 60);
+    }
+    init();
+
     function create_snake(){
         var length = 5; //Length of the snake 
         snake_array = []; //Empty array to start with 
@@ -20,6 +33,16 @@ $(document).ready(function(){
             //This will create a horizontal snake starting from the top left
             snake_array.push({x: i, y:0});
         }
+    }
+
+    //Lets create the food now 
+    function create_food(){
+        food = {
+            x: Math.round(Math.random()*(w-cw)/cw),
+            y: Math.round(Math.random()*(h-cw)/cw),
+        };
+        //This will create a cell with x/y between 0-44
+        //Because there are 45(450/10) positions across the rows and columns
     }
 
     //Lets paint the snake now 
@@ -50,21 +73,48 @@ $(document).ready(function(){
         }
 
         //Lets add the game over clausees now 
-        if(nx == -1 || nx = w/cw || nx == -1 || nx = w/cw){}
+        //This will restart the game if the snake hits the wall
+        //Lets add the code for body collision 
+        if(nx == -1 || nx == w/cw || ny == -1 || ny == h/cw){
+            //restart game
+            init(); 
+            //Lets organize the code a bit now 
+            return;
+        }
 
-        var tail = snake_array.pop(); //pops out the last cell 
-        tail.x = nx;
-        tail.y = ny;
+        //Lets write the code to make the snake eat the food 
+        //The logic is simple 
+        //If he new head position matches with that of the food,
+        //Create a new head instead of moving the tail 
+        if(nx == food.x && ny == food.y){
+            var tail = {x: nx, y: ny};
+            //Create new food 
+            create_food();
+        } else {
+            var tail = snake_array.pop(); //pops out the last cell 
+            tail.x = nx;
+            tail.y = ny;
+        }
+        //The snake can now eat the food
+
         snake_array.unshift(tail); //puts back the tail as the first cell 
 
         for(var i=0; i < snake_array.length; i++){
             var c = snake_array[i];
             //Lets paint 10px wide cells 
-            ctx.fillStyle = "blue";
-            ctx.fillRect(c.x*cw, c.y*cw, cw, cw);
-            ctx.fillStyle = "white";
-            ctx.fillRect(c.x*cw, c.y*cw, cw, cw);
+            paint_cell(c.x, c.y);
         }
+
+        //Lets paint the food 
+        paint_cell(food.x, food.y);
+    }
+
+    //Lets first create a generic function to paint cells 
+    function paint_cell(x,y){
+        ctx.fillStyle = "blue";
+        ctx.fillRect(x*cw, y*cw, cw, cw);
+        ctx.fillStyle = "white";
+        ctx.fillRect(x*cw, y*cw, cw, cw);
     }
 
     //Lets add the keyboard controls now 
@@ -80,8 +130,8 @@ $(document).ready(function(){
         } else if(key == "40" && d != "up") {
             d = "down";
         }
+        //The snake is now keyboard controllable 
     });
 
-    //Lets move the snake now using a timer which will trigger the paint function every 60ms
-    game_loop = setInterval(paint, 60);
+    
 });

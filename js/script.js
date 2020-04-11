@@ -9,6 +9,7 @@ $(document).ready(function(){
     var cw = 10;
     var d;
     var food;
+    var score;
 
     //Lets create the snake now 
     var snake_array; //an array of cells to make up the snake 
@@ -17,6 +18,8 @@ $(document).ready(function(){
         d = "right"; //default direction
         create_snake();
         create_food(); //Now we can see the food particle
+        //Finally lets display the score 
+        score = 0;
 
         //Lets move the snake now using a timer which will trigger the paint function every 60ms
         if(typeof game_loop != "undefined") {
@@ -75,7 +78,8 @@ $(document).ready(function(){
         //Lets add the game over clausees now 
         //This will restart the game if the snake hits the wall
         //Lets add the code for body collision 
-        if(nx == -1 || nx == w/cw || ny == -1 || ny == h/cw){
+        //Now if the head of the snake bumps into its body, the game will restart 
+        if(nx == -1 || nx == w/cw || ny == -1 || ny == h/cw || check_collision(nx, ny, snake_array)){
             //restart game
             init(); 
             //Lets organize the code a bit now 
@@ -84,10 +88,11 @@ $(document).ready(function(){
 
         //Lets write the code to make the snake eat the food 
         //The logic is simple 
-        //If he new head position matches with that of the food,
+        //If the new head position matches with that of the food,
         //Create a new head instead of moving the tail 
         if(nx == food.x && ny == food.y){
             var tail = {x: nx, y: ny};
+            score++;
             //Create new food 
             create_food();
         } else {
@@ -107,6 +112,9 @@ $(document).ready(function(){
 
         //Lets paint the food 
         paint_cell(food.x, food.y);
+        //Lets paint the score
+        var score_text = "Score:" + score;
+        ctx.fillText(score_text, 5, h-5);
     }
 
     //Lets first create a generic function to paint cells 
@@ -115,6 +123,17 @@ $(document).ready(function(){
         ctx.fillRect(x*cw, y*cw, cw, cw);
         ctx.fillStyle = "white";
         ctx.fillRect(x*cw, y*cw, cw, cw);
+    }
+
+    function check_collision(x, y, array){
+        //this function will check if the provided x/y coordinates exist 
+        //in an array
+        for(var i = 0; i < array.length; i++){
+            if(array[i].x == x && array[i].y == y) {
+                return true;
+            }
+            return false;
+        }
     }
 
     //Lets add the keyboard controls now 

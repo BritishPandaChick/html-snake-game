@@ -21,7 +21,8 @@ $(document).ready(function(){
         //finally lets display the score
         score = 0;
 
-        //Lets move the snake now using a timer which will trigger the paint function every 60ms
+        //Lets move the snake now using a timer which will trigger the paint function
+        //every 60ms
         if(typeof game_loop != "undefined") {
             clearInterval(game_loop);
         }
@@ -62,6 +63,7 @@ $(document).ready(function(){
         //Pop out the tail cell and place it infront of the head cell 
         var nx = snake_array[0].x;
         var ny = snake_array[0].y;
+
         //These were the position of the head cell 
         //We will increment it to get the new head position 
         //Let's add proper direction based movement now 
@@ -104,7 +106,7 @@ $(document).ready(function(){
 
         snake_array.unshift(tail); //puts back the tail as the first cell 
 
-        for(var i=0; i < snake_array.length; i++){
+        for(var i = 0; i < snake_array.length; i++){
             var c = snake_array[i];
             //Lets paint 10px wide cells 
             paint_cell(c.x, c.y);
@@ -137,7 +139,7 @@ $(document).ready(function(){
     }
 
     //Lets add the keyboard controls now 
-    $(document).keyboard(function(e){
+    $(document).keydown(function(e){
         var key = e.which;
         // We will add another clause to prevent reverse gear
         if(key == "37" && d !== "right") {
